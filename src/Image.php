@@ -670,6 +670,44 @@ class Image
 
         return $this->resize($width, $height);
     }
+	
+	/**
+     * Shrink/Enlarge the image proportionally so that the image matches the width or height of what was passed
+	 * So if you have a 400x800 picture and you pass in 800  
+	 * It will resize the image to be 800x1600  
+	 * So if you have a 1600x800 picture and you pass in 800.  
+	 * It will resize the image to be 800x400  
+     *
+     * @param int $maxWidthHeight
+     * @return $this
+     */
+    public function autoSize($maxWidthHeight)
+    {
+        // If it already fits, there's nothing to do
+        if (($this->_width == $maxWidthHeight && $this->_height >= $maxWidthHeight) || ($this->_height == $maxWidthHeight && $this->_width >= $maxWidthHeight)) {
+            return $this;
+        }
+
+        $width  = $this->_width;
+        $height = $this->_height;
+
+		while($width != $maxWidthHeight && $height != $maxWidthHeight){
+			$aspectRatioW = $maxWidthHeight / $width;
+			$aspectRatioH = $maxWidthHeight / $height;
+
+			if($aspectRatioW >= $aspectRatioH ){
+				$width = $width * $aspectRatioW;
+				$height = $height * $aspectRatioW;
+				continue;
+			}
+
+			$width = $width * $aspectRatioH;
+			$height = $height * $aspectRatioH;
+		}
+		
+        return $this->resize(round($width, 0), round($height, 0));
+    }
+	
 
     /**
      * Thumbnail.
